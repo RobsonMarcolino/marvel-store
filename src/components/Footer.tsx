@@ -33,7 +33,7 @@ export const Footer = () => {
 
             <footer className="bg-gray-950 text-white py-10 relative z-20 border-t border-gray-800">
                 <div className="w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-sans text-gray-400">
-                    <p>© 2024 Marvel Comics Store. Desenvolvido por Robson Marcolino.</p>
+                    <p>© 2025 Marvel Comics Store. Desenvolvido por Robson Marcolino.</p>
                     <div className="flex gap-8">
                         <a href="#" className="hover:text-red-500">Termos</a>
                         <a href="#" className="hover:text-red-500">Privacidade</a>
