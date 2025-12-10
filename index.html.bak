@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- SEO & METADATA -->
+    <meta
+      name="description"
+      content="A melhor loja de quadrinhos da Marvel. Compre HQs exclusivas dos Vingadores, X-Men, Homem-Aranha e muito mais."
+    />
+    <meta
+      property="og:title"
+      content="Marvel Comics Store | Multiverso de HQs"
+    />
+    <meta
+      property="og:description"
+      content="Encontre as sagas mais épicas e edições de colecionador."
+    />
+    <meta
+      property="og:image"
+      content="https://i.pinimg.com/1200x/97/74/57/977457b721a68d280eadfcb1b8d2765a.jpg"
+    />
+    <meta property="og:type" content="website" />
+
+    <title>Marvel Comics Store | Seus Heróis Favoritos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bangers&family=Roboto:wght@400;500;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        font-family: "Roboto", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      .marvel-font {
+        font-family: "Bangers", cursive;
+        letter-spacing: 1px;
+      }
+
+      .comic-card {
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+      }
+      .comic-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+      }
+
+      /* Fundo da Página com a Imagem do Wolverine */
+      .bg-page-wrapper {
+        background-image: url("https://i.pinimg.com/1200x/97/74/57/977457b721a68d280eadfcb1b8d2765a.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-color: #111827; /* Fallback */
+      }
+
+      /* Padrão para o conteúdo (Dentro da caixa) */
+      .bg-comic-pattern {
+        background-image: radial-gradient(#e5e7eb 15%, transparent 16%),
+          radial-gradient(#e5e7eb 15%, transparent 16%);
+        background-size: 20px 20px;
+        background-position: 0 0, 10px 10px;
+      }
+
+      .cart-scroll::-webkit-scrollbar {
+        width: 6px;
+      }
+      .cart-scroll::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+      .cart-scroll::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 3px;
+      }
+      .cart-scroll::-webkit-scrollbar-thumb:hover {
+        background: #ed1d24;
+      }
+
+      /* Animações */
+      @keyframes modalFadeIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+      .modal-content {
+        animation: modalFadeIn 0.3s ease-out forwards;
+      }
+
+      @keyframes heartBeat {
+        0% {
+          transform: scale(1);
+        }
+        25% {
+          transform: scale(1.2);
+        }
+        50% {
+          transform: scale(1);
+        }
+        75% {
+          transform: scale(1.2);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+      .heart-active {
+        color: #ed1d24;
+        animation: heartBeat 0.5s;
+      }
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s ease-out;
+      }
+      .reveal.active {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .hero-slide {
+        transition: opacity 0.8s ease-in-out;
+      }
+      .slide-dot {
+        transition: all 0.3s ease;
+      }
+
+      /* Mobile Menu Animation */
+      #mobile-menu {
+        transition: max-height 0.3s ease-in-out, opacity 0.3s ease-in-out;
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+      }
+      #mobile-menu.open {
+        max-height: 300px;
+        opacity: 1;
+      }
+
+      /* Estrela de Avaliação */
+      .star-rating {
+        cursor: pointer;
+        color: #d1d5db;
+        transition: color 0.2s;
+      }
+      .star-rating.active {
+        color: #facc15;
+      }
+      .star-rating:hover {
+        color: #facc15;
+      }
+
+      /* Preço Riscado Custom */
+      .price-strike {
+        position: relative;
+        display: inline-block;
+        color: #9ca3af;
+        font-size: 0.8em;
+        margin-right: 4px;
+      }
+      .price-strike::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 50%;
+        width: 100%;
+        height: 2px;
+        background: #ef4444;
+        transform: rotate(-10deg);
+      }
+
+      /* Estilos para o carrossel */
+      #hero-img,
+      #hero-bg,
+      #hero-content {
+        transition: all 0.5s ease-in-out;
+      }
+
+      #hero-bg {
+        transition: opacity 0.8s ease-in-out, background-image 0.8s ease-in-out;
+      }
+
+      .slide-dot {
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .slide-dot.active {
+        background-color: #fff;
+        opacity: 1;
+        transform: scale(1.2);
+      }
+
+      /* Botão Voltar ao Topo */
+      #back-to-top {
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      #back-to-top:hover {
+        transform: translateY(-5px) scale(1.1);
+        box-shadow: 0 8px 25px rgba(237, 29, 36, 0.4);
+      }
+
+      /* Animação de erro para validação */
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+
+      .error-shake {
+        animation: shake 0.4s ease-in-out;
+        border-color: #ef4444 !important;
+        box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+      }
+
+      /* Animação de entrada do cupom */
+      @keyframes couponSuccess {
+        0% {
+          transform: scale(0.9);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .coupon-success {
+        animation: couponSuccess 0.5s ease-out;
+      }
+    </style>
+  </head>
+  <body
+    class="bg-page-wrapper text-gray-800 overflow-x-hidden min-h-screen py-0 md:py-8 font-sans"
+  >
+    <!-- Overlay escuro para melhorar contraste do fundo -->
+    <div class="fixed inset-0 bg-gray-900/60 pointer-events-none z-[-1]"></div>
+
+    <!-- WRAPPER DO BOXED LAYOUT -->
+    <div
+      id="app-wrapper"
+      class="max-w-[1440px] mx-auto bg-gray-50 relative shadow-[0_0_50px_rgba(0,0,0,0.8)] md:rounded-2xl overflow-hidden min-h-screen bg-comic-pattern border-x-4 border-gray-800"
+    >
+      <!-- NAVBAR -->
+      <div
+        class="sticky top-0 z-50 flex flex-col items-center pointer-events-none"
+      >
+        <nav
+          class="w-full bg-gray-900 text-white shadow-2xl border-b-2 border-red-600/50 pointer-events-auto relative overflow-hidden transition-all duration-300"
+          id="navbar"
+        >
+          <div
+            class="absolute inset-0 bg-[url('https://i.pinimg.com/1200x/97/74/57/977457b721a68d280eadfcb1b8d2765a.jpg')] bg-cover bg-center opacity-75"
+          ></div>
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-gray-900 via-gray-900/80 to-gray-900/90"
+          ></div>
+
+          <div
+            class="container mx-auto px-6 py-3 flex justify-between items-center relative z-10 h-16"
+          >
+            <!-- Logo -->
+            <div
+              class="flex items-center gap-2 cursor-pointer group"
+              onclick="window.scrollTo(0,0)"
+            >
+              <div
+                class="bg-red-600 text-white px-3 py-1 font-black text-2xl tracking-tighter uppercase select-none transform -skew-x-12 group-hover:skew-x-0 transition-transform shadow-lg"
+              >
+                Marvel
+              </div>
+              <span
+                class="font-bold text-xl tracking-wide hidden sm:block ml-1 group-hover:text-red-500 transition-colors drop-shadow-md"
+                >Comics Store</span
+              >
+            </div>
+
+            <!-- Desktop Menu -->
+            <div class="hidden md:flex items-center gap-6">
+              <div class="relative group">
+                <input
+                  type="text"
+                  id="search-input"
+                  placeholder="Buscar HQ..."
+                  class="bg-gray-800/80 text-white text-sm rounded-full px-4 py-2 pl-10 focus:outline-none focus:ring-2 focus:ring-red-600 w-48 transition-all focus:w-64 placeholder-gray-400 font-sans shadow-inner backdrop-blur-sm border border-gray-700"
+                  onkeyup="searchComics(this.value)"
+                />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4 absolute left-3 top-2.5 text-gray-400 group-focus-within:text-red-500 transition-colors"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              </div>
+
+              <div
+                class="relative cursor-pointer group"
+                onclick="toggleWishlistModal()"
+              >
+                <div
+                  class="p-2 rounded-full hover:bg-white/10 transition relative backdrop-blur-sm"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-gray-300 group-hover:text-red-500 transition-colors"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                </div>
+              </div>
+
+              <div class="relative cursor-pointer group" onclick="toggleCart()">
+                <div
+                  class="p-2 rounded-full hover:bg-white/10 transition backdrop-blur-sm"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-6 w-6 text-gray-300 group-hover:text-red-500 transition-colors"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  <span
+                    id="cart-count"
+                    class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center transform scale-0 transition-transform duration-200 border-2 border-gray-900 shadow-sm"
+                    >0</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center gap-4">
+              <div class="relative cursor-pointer" onclick="toggleCart()">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-6 w-6 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
+                  />
+                </svg>
+                <span
+                  id="cart-count-mobile"
+                  class="absolute -top-2 -right-2 bg-red-600 text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center border border-gray-900"
+                  >0</span
+                >
+              </div>
+              <button
+                onclick="toggleMobileMenu()"
+                class="text-white focus:outline-none"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16m-7 6h7"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Mobile Menu Dropdown -->
+          <div
+            id="mobile-menu"
+            class="relative z-10 bg-gray-900 border-t border-gray-800 md:hidden"
+          >
+            <div class="p-4 space-y-4">
+              <input
+                type="text"
+                onkeyup="searchComics(this.value)"
+                placeholder="Buscar..."
+                class="w-full bg-gray-800 text-white p-2 rounded-lg text-sm border border-gray-700"
+              />
+              <a
+                href="#"
+                onclick="toggleWishlistModal(); toggleMobileMenu()"
+                class="block text-gray-300 hover:text-red-500 py-2 font-bold"
+                >Meus Favoritos</a
+              >
+              <a
+                href="#products-grid"
+                onclick="toggleMobileMenu()"
+                class="block text-gray-300 hover:text-red-500 py-2 font-bold"
+                >Lançamentos</a
+              >
+              <a
+                href="#about-section"
+                onclick="toggleMobileMenu()"
+                class="block text-gray-300 hover:text-red-500 py-2 font-bold"
+                >Sobre Nós</a
+              >
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <!-- MODAL QUICK VIEW (COM RELACIONADOS E AVALIAÇÕES) -->
+      <div
+        id="quick-view-modal"
+        class="fixed inset-0 bg-black/80 z-[70] hidden flex justify-center items-center p-4 backdrop-blur-sm transition-opacity"
+      >
+        <div
+          class="bg-white w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl flex flex-col relative modal-content"
+        >
+          <button
+            onclick="closeQuickView()"
+            class="absolute top-4 right-4 text-gray-500 hover:text-red-600 z-20 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-all sticky"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+
+          <div class="flex flex-col md:flex-row">
+            <div
+              class="w-full md:w-1/2 bg-gray-100 flex justify-center items-center p-8 relative overflow-hidden min-h-[300px]"
+            >
+              <div class="absolute inset-0 bg-comic-pattern opacity-30"></div>
+              <img
+                id="qv-image"
+                src=""
+                alt=""
+                class="h-64 md:h-80 object-contain shadow-2xl rounded-lg transform transition-transform hover:scale-105 duration-500 relative z-10"
+              />
+            </div>
+            <div
+              class="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center bg-white relative"
+            >
+              <span
+                id="qv-category"
+                class="text-red-600 font-bold uppercase tracking-widest text-xs mb-2 bg-red-50 w-fit px-2 py-1 rounded"
+                >Categoria</span
+              >
+              <h2
+                id="qv-title"
+                class="text-3xl md:text-4xl text-gray-900 mb-4 leading-none"
+              >
+                Título
+              </h2>
+              <div class="flex items-center gap-2 mb-4">
+                <div
+                  class="flex text-yellow-400 text-lg"
+                  id="qv-rating-display"
+                >
+                  ★★★★★
+                </div>
+                <span class="text-gray-400 text-sm font-medium">(4.9)</span>
+              </div>
+              <p
+                id="qv-desc"
+                class="text-gray-600 text-sm mb-6 leading-relaxed font-sans border-l-4 border-red-600 pl-4"
+              >
+                Desc
+              </p>
+              <div
+                class="flex items-center justify-between mt-auto border-t border-gray-100 pt-4"
+              >
+                <span id="qv-price" class="text-3xl font-black text-gray-900"
+                  >R$ 0,00</span
+                >
+                <button
+                  id="qv-add-btn"
+                  class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-full font-bold uppercase tracking-wider shadow-lg transform active:scale-95 transition-all flex items-center gap-2 font-sans"
+                >
+                  Adicionar
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- SEÇÃO DE AVALIAÇÕES -->
+          <div class="bg-white p-8 border-t border-gray-100">
+            <h3
+              class="text-xl text-gray-800 mb-6 font-bold tracking-wide flex items-center gap-2"
+            >
+              Avaliações dos Fãs
+              <span class="text-gray-400 text-sm font-normal" id="review-count"
+                >(0)</span
+              >
+            </h3>
+
+            <!-- Lista de Reviews -->
+            <div
+              id="reviews-list"
+              class="space-y-4 mb-8 max-h-60 overflow-y-auto pr-2"
+            >
+              <!-- Reviews injetados via JS -->
+            </div>
+
+            <!-- Formulário de Avaliação -->
+            <div class="bg-gray-50 p-6 rounded-xl border border-gray-200">
+              <h4 class="text-sm font-bold text-gray-700 uppercase mb-3">
+                Deixe sua opinião
+              </h4>
+              <div class="flex gap-1 mb-3" id="star-input">
+                <button onclick="setRating(1)" class="star-rating text-2xl">
+                  ★
+                </button>
+                <button onclick="setRating(2)" class="star-rating text-2xl">
+                  ★
+                </button>
+                <button onclick="setRating(3)" class="star-rating text-2xl">
+                  ★
+                </button>
+                <button onclick="setRating(4)" class="star-rating text-2xl">
+                  ★
+                </button>
+                <button onclick="setRating(5)" class="star-rating text-2xl">
+                  ★
+                </button>
+              </div>
+              <textarea
+                id="review-text"
+                class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-600 focus:border-transparent outline-none text-sm mb-3 font-sans"
+                rows="2"
+                placeholder="O que você achou dessa HQ?"
+              ></textarea>
+              <button
+                onclick="submitReview()"
+                class="bg-gray-900 text-white px-6 py-2 rounded-lg font-bold text-sm hover:bg-gray-800 transition"
+              >
+                Publicar Avaliação
+              </button>
+            </div>
+          </div>
+
+          <!-- Seção de Relacionados -->
+          <div class="bg-gray-50 p-8 border-t border-gray-200">
+            <h3 class="text-xl text-gray-800 mb-4 font-bold tracking-wide">
+              Quem viu, também gostou:
+            </h3>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4" id="qv-related">
+              <!-- JS Injects here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MODAL CARRINHO COM CHECKOUT -->
+      <div
+        id="cart-modal"
+        class="fixed inset-0 bg-black/60 z-[60] hidden flex justify-end transition-opacity duration-300 backdrop-blur-sm"
+      >
+        <div
+          class="bg-white w-full max-w-md h-full shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300"
+          id="cart-panel"
+        >
+          <!-- Header -->
+          <div
+            class="bg-gray-900 text-white p-6 flex justify-between items-center shadow-md border-b-4 border-red-600 shrink-0"
+          >
+            <h2
+              class="text-2xl font-bold flex items-center gap-2 tracking-wide font-sans"
+            >
+              <span class="text-red-600">SEU</span> CARRINHO
+            </h2>
+            <button
+              onclick="toggleCart()"
+              class="text-gray-400 hover:text-white transition bg-gray-800 p-2 rounded-full"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
+
+          <!-- View 1: Lista de Itens -->
+          <div id="cart-view-list" class="flex flex-col h-full overflow-hidden">
+            <div
+              id="cart-items"
+              class="flex-1 overflow-y-auto p-6 space-y-4 cart-scroll bg-gray-50"
+            >
+              <!-- Itens -->
+            </div>
+
+            <!-- Seção de Cupom -->
+            <div class="p-4 bg-white border-t border-gray-200">
+              <div class="flex gap-2">
+                <input
+                  type="text"
+                  id="coupon-input"
+                  placeholder="Código do cupom"
+                  class="flex-1 p-3 rounded-lg border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none text-sm"
+                  onkeyup="if(event.key === 'Enter') applyCoupon()"
+                />
+                <button
+                  onclick="applyCoupon()"
+                  class="bg-gray-800 text-white px-4 py-3 rounded-lg font-bold text-sm hover:bg-gray-700 transition whitespace-nowrap"
+                >
+                  Aplicar
+                </button>
+              </div>
+              <div id="coupon-message" class="mt-2 text-sm"></div>
+              <div
+                id="coupon-discount"
+                class="hidden mt-2 p-3 bg-green-50 text-green-700 rounded-lg border border-green-200 coupon-success"
+              >
+                <div class="flex justify-between items-center">
+                  <span class="font-bold">Cupom aplicado!</span>
+                  <button
+                    onclick="removeCoupon()"
+                    class="text-green-700 hover:text-green-900"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-4 w-4"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M6 18L18 6M6 6l12 12"
+                      />
+                    </svg>
+                  </button>
+                </div>
+                <div id="coupon-details" class="text-xs mt-1"></div>
+              </div>
+            </div>
+
+            <div
+              class="p-6 bg-white border-t border-gray-200 shadow-[0_-5px_15px_rgba(0,0,0,0.05)] shrink-0"
+            >
+              <div class="space-y-3 mb-6">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-500 font-bold uppercase text-sm"
+                    >Subtotal</span
+                  >
+                  <span
+                    class="text-xl font-bold text-gray-900"
+                    id="cart-subtotal"
+                    >R$ 0,00</span
+                  >
+                </div>
+                <div
+                  class="flex justify-between items-center hidden"
+                  id="discount-row"
+                >
+                  <span class="text-gray-500 font-bold uppercase text-sm"
+                    >Desconto</span
+                  >
+                  <span
+                    class="text-xl font-bold text-green-600"
+                    id="cart-discount"
+                    >-R$ 0,00</span
+                  >
+                </div>
+                <div
+                  class="flex justify-between items-center border-t border-gray-200 pt-3"
+                >
+                  <span class="text-gray-900 font-bold uppercase text-lg"
+                    >Total</span
+                  >
+                  <span class="text-3xl font-black text-red-600" id="cart-total"
+                    >R$ 0,00</span
+                  >
+                </div>
+              </div>
+              <button
+                onclick="goToCheckout()"
+                class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-full shadow-lg transform transition active:scale-95 uppercase tracking-wider flex justify-center items-center gap-2 font-sans"
+              >
+                Finalizar Compra
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- View 2: Checkout Form -->
+          <div
+            id="cart-view-checkout"
+            class="hidden flex-col h-full overflow-y-auto bg-gray-50"
+          >
+            <div class="p-6 space-y-6">
+              <button
+                onclick="backToCart()"
+                class="text-sm text-gray-500 hover:text-red-600 flex items-center gap-1 font-bold mb-4"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                Voltar ao carrinho
+              </button>
+
+              <!-- Resumo Rápido -->
+              <div
+                class="bg-white p-4 rounded-xl border border-gray-200 shadow-sm"
+              >
+                <h4 class="font-bold text-gray-700 mb-3">Resumo do Pedido</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-600 text-sm">Subtotal</span>
+                    <span class="text-sm font-bold" id="checkout-subtotal"
+                      >R$ 0,00</span
+                    >
+                  </div>
+                  <div
+                    class="flex justify-between items-center hidden"
+                    id="checkout-discount-row"
+                  >
+                    <span class="text-gray-600 text-sm">Desconto</span>
+                    <span
+                      class="text-sm font-bold text-green-600"
+                      id="checkout-discount"
+                      >-R$ 0,00</span
+                    >
+                  </div>
+                  <div class="border-t border-gray-200 pt-2 mt-2">
+                    <div class="flex justify-between items-center">
+                      <span class="font-bold text-gray-700">Total</span>
+                      <span
+                        class="font-black text-2xl text-red-600"
+                        id="checkout-total"
+                        >R$ 0,00</span
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Formulário -->
+              <form
+                id="checkout-form"
+                onsubmit="processPayment(event)"
+                class="space-y-4"
+              >
+                <div>
+                  <label
+                    class="block text-xs font-bold text-gray-500 uppercase mb-1"
+                    >Nome Completo</label
+                  >
+                  <input
+                    type="text"
+                    id="checkout-name"
+                    required
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none font-sans"
+                    placeholder="Steve Rogers"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-bold text-gray-500 uppercase mb-1"
+                    >E-mail</label
+                  >
+                  <input
+                    type="email"
+                    id="checkout-email"
+                    required
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none font-sans"
+                    placeholder="cap@avengers.com"
+                  />
+                </div>
+                <div>
+                  <label
+                    class="block text-xs font-bold text-gray-500 uppercase mb-1"
+                    >Endereço de Entrega</label
+                  >
+                  <input
+                    type="text"
+                    id="checkout-address"
+                    required
+                    class="w-full p-3 rounded-lg border border-gray-300 focus:border-red-600 focus:ring-1 focus:ring-red-600 outline-none font-sans"
+                    placeholder="Rua dos Heróis, 100"
+                  />
+                </div>
+
+                <div class="pt-4 border-t border-gray-200 mt-4">
+                  <label
+                    class="block text-xs font-bold text-gray-500 uppercase mb-2"
+                    >Dados do Cartão</label
+                  >
+                  <div class="space-y-3">
+                    <input
+                      type="text"
+                      id="checkout-card"
+                      required
+                      class="w-full p-3 rounded-lg border border-gray-300 outline-none font-sans bg-white"
+                      placeholder="0000 0000 0000 0000"
+                      maxlength="19"
+                    />
+                    <div class="flex gap-3">
+                      <input
+                        type="text"
+                        id="checkout-expiry"
+                        required
+                        class="w-1/2 p-3 rounded-lg border border-gray-300 outline-none font-sans"
+                        placeholder="MM/AA"
+                        maxlength="5"
+                      />
+                      <input
+                        type="text"
+                        id="checkout-cvv"
+                        required
+                        class="w-1/2 p-3 rounded-lg border border-gray-300 outline-none font-sans"
+                        placeholder="CVV"
+                        maxlength="3"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-full shadow-lg transform transition active:scale-95 uppercase tracking-wider mt-6"
+                >
+                  Pagar Agora
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <!-- View 3: Success -->
+          <div
+            id="cart-view-success"
+            class="hidden flex-col h-full items-center justify-center p-8 bg-white text-center"
+          >
+            <div
+              class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mb-6 animate-bounce"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-12 w-12 text-green-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+            <h2 class="text-3xl font-black text-gray-900 mb-2">
+              Pedido Confirmado!
+            </h2>
+            <p class="text-gray-500 mb-8 font-sans">
+              Seus quadrinhos chegarão em breve.<br />Obrigado por salvar o dia!
+            </p>
+            <button
+              onclick="toggleCart()"
+              class="bg-gray-900 text-white px-8 py-3 rounded-full font-bold hover:bg-gray-800 transition shadow-lg uppercase"
+            >
+              Continuar Comprando
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO SECTION (SLIDER AUTOMÁTICO) -->
+      <header
+        class="relative bg-gray-900 h-[650px] overflow-hidden flex items-center shadow-2xl group pt-24"
+        id="hero-section"
+      >
+        <!-- Background e Conteúdo Dinâmico -->
+        <div
+          id="hero-bg"
+          class="absolute inset-0 bg-cover bg-center opacity-60 md:opacity-40 transition-all duration-700 transform scale-105"
+        ></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/80 to-gray-900/30 md:bg-gradient-to-r md:from-gray-900 md:via-gray-900/90 md:to-transparent"
+        ></div>
+
+        <div
+          class="w-full max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-12 h-full"
+        >
+          <div
+            id="hero-content"
+            class="flex-1 text-center md:text-left transition-opacity duration-500 pt-10 md:pt-0"
+          >
+            <!-- Injetado via JS -->
+          </div>
+          <div
+            class="hidden md:flex flex-1 justify-center perspective-1000 h-full items-center relative"
+          >
+            <div
+              class="absolute inset-0 bg-red-600 blur-[100px] opacity-20 rounded-full animate-pulse"
+            ></div>
+            <img
+              id="hero-img"
+              src=""
+              alt="Cover"
+              class="w-[340px] rounded-lg shadow-2xl rotate-y-12 hover:rotate-y-0 transition-all duration-700 border-4 border-white/10 hover:border-red-600 relative z-10 transform translate-y-4 hover:-translate-y-2"
+            />
+          </div>
+        </div>
+
+        <!-- Controles do Slider -->
+        <div
+          class="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex gap-3 z-20"
+        >
+          <button
+            onclick="setSlide(0)"
+            class="w-3 h-3 rounded-full bg-white opacity-50 hover:opacity-100 transition slide-dot active"
+            data-slide="0"
+          ></button>
+          <button
+            onclick="setSlide(1)"
+            class="w-3 h-3 rounded-full bg-white opacity-50 hover:opacity-100 transition slide-dot"
+            data-slide="1"
+          ></button>
+          <button
+            onclick="setSlide(2)"
+            class="w-3 h-3 rounded-full bg-white opacity-50 hover:opacity-100 transition slide-dot"
+            data-slide="2"
+          ></button>
+        </div>
+      </header>
+
+      <!-- FAIXA DE OFERTA RELÂMPAGO (Expandida) -->
+      <section
+        class="bg-yellow-400 py-6 relative overflow-hidden border-b-4 border-black shadow-lg"
+      >
+        <!-- Título -->
+        <div
+          class="w-full max-w-7xl mx-auto px-6 mb-6 flex flex-col sm:flex-row justify-between items-center gap-4 relative z-10"
+        >
+          <div class="flex items-center gap-3">
+            <div
+              class="bg-black text-yellow-400 p-2 rounded-full animate-bounce shadow-md"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </div>
+            <div class="text-center sm:text-left">
+              <h3
+                class="font-black text-2xl text-black leading-none uppercase italic tracking-wide"
+              >
+                Oferta Relâmpago!
+              </h3>
+              <p class="text-black font-bold text-xs uppercase tracking-wider">
+                50% OFF em Itens Selecionados
+              </p>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-2 text-black font-black text-2xl font-mono bg-white/30 px-6 py-2 rounded-lg border-2 border-black shadow-inner"
+          >
+            <div class="text-center w-12">
+              <span id="cd-hours">04</span
+              ><span class="text-[10px] block font-sans font-bold -mt-1"
+                >HRS</span
+              >
+            </div>
+            <span>:</span>
+            <div class="text-center w-12">
+              <span id="cd-minutes">00</span
+              ><span class="text-[10px] block font-sans font-bold -mt-1"
+                >MIN</span
+              >
+            </div>
+            <span>:</span>
+            <div class="text-center w-12">
+              <span id="cd-seconds">00</span
+              ><span class="text-[10px] block font-sans font-bold -mt-1"
+                >SEG</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <!-- Cards de Promoção -->
+        <div class="w-full max-w-7xl mx-auto px-6 relative z-10">
+          <div
+            id="sale-items-container"
+            class="grid grid-cols-1 sm:grid-cols-3 gap-4"
+          >
+            <!-- Injetado via JS -->
+          </div>
+        </div>
+
+        <div
+          class="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/comic-dots.png')]"
+        ></div>
+      </section>
+
+      <!-- NOVA SEÇÃO DE UNIVERSOS (BOTÕES COM IMAGEM DE FUNDO) -->
+      <section class="w-full max-w-7xl mx-auto px-6 py-12 relative z-10">
+        <h2
+          class="text-5xl text-white mb-10 text-center font-black tracking-wider drop-shadow-[0_5px_5px_rgba(0,0,0,0.8)] uppercase"
+        >
+          Explore por <span class="text-red-600">Universos</span>
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- Avengers -->
+          <button
+            onclick="filterComics('Avengers')"
+            class="relative h-40 rounded-2xl shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all border-2 border-gray-800 overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-[url('https://i.pinimg.com/1200x/67/da/b2/67dab2b7eb22da9573697e5c7e85078a.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+            ></div>
+            <span
+              class="relative z-10 text-white font-black text-2xl uppercase tracking-widest drop-shadow-md group-hover:text-red-500 transition-colors"
+              >Vingadores</span
+            >
+          </button>
+          <!-- X-Men -->
+          <button
+            onclick="filterComics('X-Men')"
+            class="relative h-40 rounded-2xl shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all border-2 border-gray-800 overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-[url('https://i.pinimg.com/736x/d4/f1/3f/d4f13f1c526460f21b1b02cd5d98f807.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+            ></div>
+            <span
+              class="relative z-10 text-white font-black text-2xl uppercase tracking-widest drop-shadow-md group-hover:text-yellow-400 transition-colors"
+              >X-Men</span
+            >
+          </button>
+          <!-- Star Wars -->
+          <button
+            onclick="filterComics('Star Wars')"
+            class="relative h-40 rounded-2xl shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all border-2 border-gray-800 overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-[url('https://i.pinimg.com/1200x/c0/ef/e5/c0efe5572f25476d454548374f04f18a.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+            ></div>
+            <span
+              class="relative z-10 text-white font-black text-2xl uppercase tracking-widest drop-shadow-md group-hover:text-blue-400 transition-colors"
+              >Star Wars</span
+            >
+          </button>
+          <!-- Secret Wars (Filtrando por Avengers como placeholder ou criando categoria nova) -->
+          <button
+            onclick="filterComics('Avengers')"
+            class="relative h-40 rounded-2xl shadow-lg transform hover:-translate-y-2 hover:shadow-2xl transition-all border-2 border-gray-800 overflow-hidden group"
+          >
+            <div
+              class="absolute inset-0 bg-[url('https://i.pinimg.com/1200x/01/7f/e8/017fe89a9d7cfc606454f4b4264d5a04.jpg')] bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"
+            ></div>
+            <span
+              class="relative z-10 text-white font-black text-2xl uppercase tracking-widest drop-shadow-md group-hover:text-purple-400 transition-colors"
+              >Secret Wars</span
+            >
+          </button>
+        </div>
+      </section>
+
+      <!-- FILTROS ORIGINAIS (Mantidos para compatibilidade, mas o foco agora são os botões acima) -->
+      <section class="w-full max-w-7xl mx-auto px-6 py-4 relative z-10 hidden">
+        <!-- (Conteúdo oculto ou simplificado se quiser manter a barra de filtros antiga) -->
+      </section>
+
+      <!-- PRODUTOS -->
+      <section
+        class="w-full max-w-7xl mx-auto px-6 pb-24 relative z-10 min-h-[400px]"
+      >
+        <div class="flex items-center justify-center mb-8 relative reveal">
+          <h2
+            class="text-5xl text-gray-900 text-center relative z-10 px-8 bg-gray-50 uppercase tracking-wide transform skew-x-[-5deg]"
+          >
+            HQs Mais Vendidas
+          </h2>
+          <div
+            class="absolute w-full h-1 bg-gray-300 top-1/2 left-0 -z-0"
+          ></div>
+        </div>
+
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8"
+          id="products-grid"
+        >
+          <!-- JS vai preencher -->
+        </div>
+
+        <!-- Botão Ver Mais -->
+        <div class="text-center mt-12" id="load-more-container">
+          <button
+            onclick="loadMore()"
+            class="bg-gray-900 text-white font-bold py-3 px-10 rounded-full hover:bg-red-600 transition-colors shadow-lg uppercase tracking-wider transform hover:scale-105 active:scale-95"
+          >
+            Ver Mais HQs
+          </button>
+        </div>
+
+        <div
+          id="no-results"
+          class="hidden text-center py-20 bg-white rounded-xl shadow-inner border border-gray-100"
+        >
+          <div class="text-6xl mb-4 grayscale opacity-50">🕷️</div>
+          <p class="text-2xl text-gray-400 font-bold font-sans mb-2">
+            Nenhum gibi encontrado...
+          </p>
+          <button
+            onclick="resetFilters()"
+            class="text-red-600 font-bold hover:text-red-800 font-sans border-b-2 border-red-600 pb-1"
+          >
+            Ver todos os produtos
+          </button>
+        </div>
+      </section>
+
+      <!-- SOBRE NÓS -->
+      <section
+        id="about-section"
+        class="relative py-24 reveal overflow-hidden border-t border-gray-800"
+      >
+        <div
+          class="absolute inset-0 bg-[url('https://i.pinimg.com/736x/f2/db/0a/f2db0a8452fab4aadfed4eb97f84f2d1.jpg')] bg-cover bg-center bg-no-repeat fixed-bg"
+        ></div>
+        <div class="absolute inset-0 bg-gray-900/85"></div>
+        <div
+          class="w-full max-w-7xl mx-auto px-6 relative z-10 flex flex-col md:flex-row items-center gap-16"
+        >
+          <div class="flex-1 text-center md:text-left">
+            <span
+              class="text-red-500 font-bold tracking-[0.2em] uppercase text-sm mb-2 block font-sans"
+              >Nossa Missão</span
+            >
+            <h2
+              class="text-5xl md:text-6xl text-white mb-6 drop-shadow-lg leading-tight"
+            >
+              Mais que uma loja,<br />um
+              <span class="text-red-600">Legado.</span>
+            </h2>
+            <p
+              class="text-gray-300 text-lg mb-6 leading-relaxed font-sans font-light"
+            >
+              Desde 2024, a Marvel Comics Store conecta fãs de todas as gerações
+              aos momentos mais icônicos do universo dos quadrinhos.
+            </p>
+            <p
+              class="text-gray-400 text-base italic border-l-4 border-red-600 pl-4 font-sans"
+            >
+              "Quadrinhos são a nossa mitologia moderna." – Stan Lee
+            </p>
+          </div>
+          <div class="flex-1 flex justify-center relative">
+            <div
+              class="relative w-full max-w-md rounded-xl overflow-hidden shadow-[0_0_40px_rgba(237,29,36,0.2)] border-4 border-gray-800 transform hover:scale-105 transition-transform duration-500"
+            >
+              <img
+                src="https://i.pinimg.com/originals/59/07/ad/5907ad9e817ee862ed10f54490207523.gif"
+                class="w-full h-full object-cover"
+              />
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-gray-900 via-transparent to-transparent opacity-60"
+              ></div>
+              <div
+                class="absolute bottom-4 left-4 text-white font-bangers tracking-wide text-2xl drop-shadow-md"
+              >
+                Excelsior!
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- FOOTER -->
+      <section
+        class="relative bg-gray-50 py-24 overflow-hidden border-b-8 border-red-600"
+      >
+        <div class="absolute inset-0 bg-comic-pattern opacity-50"></div>
+        <div
+          class="absolute inset-0 bg-gradient-to-t from-gray-100 via-white/80 to-transparent"
+        ></div>
+        <div class="w-full max-w-7xl mx-auto px-6 relative z-10 text-center">
+          <span
+            class="text-red-600 font-bold tracking-[0.3em] uppercase text-sm mb-4 block animate-pulse"
+            >Newsletter Oficial</span
+          >
+          <h2
+            class="text-5xl md:text-7xl text-gray-900 mb-6 font-bold tracking-wide leading-none"
+          >
+            Junte-se ao <br /><span
+              class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-red-800"
+              >Multiverso</span
+            >
+          </h2>
+          <div
+            class="flex flex-col sm:flex-row justify-center gap-4 max-w-md mx-auto"
+          >
+            <input
+              type="email"
+              placeholder="Seu melhor e-mail"
+              class="px-6 py-4 rounded-full text-gray-900 focus:outline-none focus:ring-4 focus:ring-red-600/30 flex-1 shadow-lg font-sans border border-gray-200 focus:border-red-600 transition-all bg-white"
+            />
+            <button
+              class="bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-full font-bold uppercase tracking-wider transition-all hover:scale-105 shadow-xl font-sans hover:shadow-red-600/30"
+            >
+              Inscrever-se
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <footer
+        class="bg-gray-950 text-white py-10 relative z-20 border-t border-gray-800"
+      >
+        <div
+          class="w-full max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6 text-sm font-sans text-gray-400"
+        >
+          <p>© 2024 Marvel Comics Store. Desenvolvido por IA.</p>
+          <div class="flex gap-8">
+            <a href="#" class="hover:text-red-500">Termos</a
+            ><a href="#" class="hover:text-red-500">Privacidade</a>
+          </div>
+        </div>
+      </footer>
+
+      <!-- TOAST -->
+      <div
+        id="toast"
+        class="fixed bottom-8 right-8 bg-gray-900 text-white px-6 py-4 rounded-xl shadow-2xl transform translate-y-40 transition-transform duration-300 flex items-center gap-4 z-[80] border-l-4 border-green-500 font-sans backdrop-blur-md bg-opacity-95"
+      >
+        <div class="bg-green-500/20 p-2 rounded-full">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-6 w-6 text-green-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <div>
+          <h4 class="font-bold text-sm text-green-400">Sucesso!</h4>
+          <p class="text-xs text-gray-300" id="toast-message">
+            Item adicionado.
+          </p>
+        </div>
+      </div>
+
+      <!-- BOTÃO VOLTAR AO TOPO (MARTELO DO THOR) -->
+      <button
+        id="back-to-top"
+        onclick="scrollToTop()"
+        class="fixed bottom-24 right-8 bg-red-600 text-white p-4 rounded-full shadow-2xl z-[75] hover:bg-red-700 transition-all duration-300 opacity-0 transform translate-y-10"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M7 11l5-5m0 0l5 5m-5-5v12"
+          />
+        </svg>
+      </button>
+    </div>
+    <!-- Fechamento do Wrapper -->
+
+    <script>
+      const comics = [
+        {
+          id: 1,
+          title: "The Amazing Spider-Man #300",
+          price: 49.9,
+          image:
+            "https://i.pinimg.com/736x/59/ed/45/59ed459bd21375304b60336a644a8e16.jpg",
+          category: "Spider-Man",
+          desc: "A primeira aparição completa de Venom! Peter Parker enfrenta seu novo pesadelo simbionte.",
+          badge: "Clássico",
+        },
+        {
+          id: 2,
+          title: "Infinity Gauntlet #1",
+          price: 120.0,
+          image:
+            "https://i.pinimg.com/736x/f0/60/e6/f060e6a7ed8cb6b1a02a81bc79aa96e5.jpg",
+          category: "Avengers",
+          desc: "Thanos reuniu as Joias do Infinito. Metade do universo está em perigo. Os Vingadores podem pará-lo?",
+          badge: "Best Seller",
+        },
+        {
+          id: 3,
+          title: "X-Men: Days of Future Past",
+          price: 85.5,
+          image:
+            "https://i.pinimg.com/736x/ed/fd/98/edfd98fe7ebb6c5f9db89eb9a8855858.jpg",
+          category: "X-Men",
+          desc: "Em um futuro distópico, Sentinelas caçam mutantes. Kitty Pryde deve viajar ao passado para salvar o futuro.",
+        },
+        {
+          id: 4,
+          title: "Civil War #1",
+          price: 65.0,
+          salePrice: 32.5,
+          isSale: true,
+          image:
+            "https://i.pinimg.com/736x/01/d8/9a/01d89af960b08b63141bf1a77dca072d.jpg",
+          category: "Avengers",
+          desc: "Capitão América vs Homem de Ferro. De que lado você está nesta batalha ideológica?",
+          badge: "Must Read",
+        },
+        {
+          id: 5,
+          title: "Old Man Logan",
+          price: 72.9,
+          image:
+            "https://i.pinimg.com/736x/63/10/44/631044a42e21a6dfd2149ee42591ebfb.jpg",
+          category: "X-Men",
+          desc: "Wolverine em um futuro onde os vilões venceram.",
+        },
+        {
+          id: 6,
+          title: "Daredevil: Born Again",
+          price: 55.0,
+          salePrice: 27.5,
+          isSale: true,
+          image:
+            "https://i.pinimg.com/736x/1d/bc/43/1dbc43f48a330c6dd3d83db936e8dbb8.jpg",
+          category: "Daredevil",
+          desc: "O Rei do Crime destrói a vida do Demolidor.",
+        },
+        {
+          id: 7,
+          title: "Black Panther #1",
+          price: 39.9,
+          image:
+            "https://i.pinimg.com/736x/41/9a/06/419a061d6655065aab4aad0f34004b80.jpg",
+          category: "Avengers",
+          desc: "T'Challa retorna a Wakanda.",
+          badge: "Novo",
+        },
+        {
+          id: 8,
+          title: "Deadpool Kills the Universe",
+          price: 59.9,
+          salePrice: 29.95,
+          isSale: true,
+          image:
+            "https://i.pinimg.com/736x/7c/d0/93/7cd093271e850761a52311eca82d90c7.jpg",
+          category: "Deadpool",
+          desc: "O Mercenário Tagarela enlouquece.",
+        },
+        {
+          id: 9,
+          title: "Wolverine: Weapon X",
+          price: 62.5,
+          image:
+            "https://m.media-amazon.com/images/I/81L7-2+y6gL._AC_UF1000,1000_QL80_.jpg",
+          category: "X-Men",
+          desc: "A origem brutal de como Logan ganhou seu esqueleto.",
+        },
+        {
+          id: 10,
+          title: "The Mighty Thor",
+          price: 54.9,
+          image:
+            "https://i.pinimg.com/1200x/be/b6/f7/beb6f7f0635bbcfb55088c2eacc50fa5.jpg",
+          category: "Avengers",
+          desc: "Jane Foster levanta o Mjolnir.",
+        },
+        {
+          id: 11,
+          title: "Secret Wars #1",
+          price: 150.0,
+          image:
+            "https://i.pinimg.com/736x/67/a3/b2/67a3b2adce6e873140f994e82b130a96.jpg",
+          category: "Avengers",
+          desc: "O multiverso está em colapso.",
+        },
+        // ADICIONADO: Star Wars (para o botão funcionar)
+        {
+          id: 12,
+          title: "Star Wars: Darth Vader #1",
+          price: 45.0,
+          image:
+            "https://upload.wikimedia.org/wikipedia/en/2/25/Star_Wars_Darth_Vader_1_Cover.jpg",
+          category: "Star Wars",
+          desc: "O Lorde Sith em sua própria série, caçando os rebeldes após a destruição da Estrela da Morte.",
+        },
+      ];
+
+      // --- HERO SLIDER ---
+      const heroSlides = [
+        {
+          id: 11,
+          title:
+            "Secret <br/><span class='text-red-600 text-stroke'>Wars</span>",
+          desc: "O multiverso está em colapso. Heróis e vilões colidem na batalha definitiva.",
+          img: "https://i.pinimg.com/736x/67/a3/b2/67a3b2adce6e873140f994e82b130a96.jpg",
+          tag: "Edição de Colecionador",
+        },
+        {
+          id: 4,
+          title: "Civil <br/><span class='text-red-600 text-stroke'>War</span>",
+          desc: "De que lado você está? Capitão América e Homem de Ferro dividem o universo.",
+          img: "https://i.pinimg.com/736x/01/d8/9a/01d89af960b08b63141bf1a77dca072d.jpg",
+          tag: "Best Seller",
+        },
+        {
+          id: 2,
+          title:
+            "Infinity <br/><span class='text-red-600 text-stroke'>Gauntlet</span>",
+          desc: "Thanos possui todas as joias do infinito. O destino do universo está por um fio.",
+          img: "https://i.pinimg.com/736x/f0/60/e6/f060e6a7ed8cb6b1a02a81bc79aa96e5.jpg",
+          tag: "Clássico Absoluto",
+        },
+      ];
+
+      let cart = JSON.parse(localStorage.getItem("marvelCart")) || [];
+      let wishlist = JSON.parse(localStorage.getItem("marvelWishlist")) || [];
+      let showWishlistOnly = false;
+      let currentSlide = 0;
+      let reviews = JSON.parse(localStorage.getItem("marvelReviews")) || {};
+      let currentRating = 0;
+      let currentViewId = null;
+      let visibleLimit = 8; // INITIAL LIMIT
+      let slideInterval;
+
+      // --- VARIÁVEIS PARA CUPONS ---
+      let activeCoupon = null;
+      const validCoupons = {
+        STANLEE: 20, // 20% de desconto
+        MARVEL10: 10, // 10% de desconto
+      };
+
+      // --- BOTÃO VOLTAR AO TOPO ---
+      function initBackToTop() {
+        const backToTopBtn = document.getElementById("back-to-top");
+
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 300) {
+            backToTopBtn.classList.remove("opacity-0", "translate-y-10");
+            backToTopBtn.classList.add("opacity-100", "translate-y-0");
+          } else {
+            backToTopBtn.classList.remove("opacity-100", "translate-y-0");
+            backToTopBtn.classList.add("opacity-0", "translate-y-10");
+          }
+        });
+      }
+
+      function scrollToTop() {
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth",
+        });
+      }
+
+      // --- CARROSSEL CORRIGIDO ---
+      function setSlide(index) {
+        currentSlide = index; // ATUALIZA A VARIÁVEL GLOBAL
+
+        const slide = heroSlides[index];
+        const heroBg = document.getElementById("hero-bg");
+        const heroSection = document.getElementById("hero-content");
+        const heroImg = document.getElementById("hero-img");
+
+        // Animações de saída
+        heroSection.style.opacity = "0";
+        heroImg.style.opacity = "0";
+        heroImg.style.transform = "translateY(20px) rotateY(10deg)";
+        heroBg.style.opacity = "0";
+
+        setTimeout(() => {
+          heroSection.innerHTML = `
+            <div class="inline-block bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-wider shadow-lg">${slide.tag}</div>
+            <h1 class="text-6xl md:text-8xl text-white mb-4 leading-none drop-shadow-lg">${slide.title}</h1>
+            <p class="text-gray-300 text-lg mb-8 max-w-lg mx-auto md:mx-0 font-sans font-light">${slide.desc}</p>
+            <button onclick="openQuickView(${slide.id})" class="bg-white text-gray-900 font-bold py-3 px-8 rounded-full hover:bg-red-600 hover:text-white transition-all hover:scale-105 shadow-lg uppercase tracking-wide font-sans">Ver Detalhes</button>
+          `;
+
+          heroImg.src = slide.img;
+          heroBg.style.backgroundImage = `url('${slide.img}')`;
+
+          // Atualiza os pontos indicadores
+          document.querySelectorAll(".slide-dot").forEach((dot, i) => {
+            if (i === index) {
+              dot.classList.add("active");
+              dot.style.opacity = "1";
+              dot.style.transform = "scale(1.2)";
+            } else {
+              dot.classList.remove("active");
+              dot.style.opacity = "0.5";
+              dot.style.transform = "scale(1)";
+            }
+          });
+
+          // Animações de entrada
+          heroSection.style.opacity = "1";
+          heroImg.style.opacity = "1";
+          heroImg.style.transform = "translateY(0) rotateY(12deg)";
+          heroBg.style.opacity = "0.6";
+        }, 300);
+      }
+
+      function startSlideInterval() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(() => {
+          currentSlide = (currentSlide + 1) % heroSlides.length;
+          setSlide(currentSlide);
+        }, 5000); // Muda a cada 5 segundos
+      }
+
+      function initCarousel() {
+        setSlide(0);
+        startSlideInterval();
+
+        // Adiciona event listeners para os botões de navegação
+        document.querySelectorAll(".slide-dot").forEach((dot, index) => {
+          dot.addEventListener("click", (e) => {
+            e.stopPropagation();
+            clearInterval(slideInterval);
+            setSlide(index);
+            startSlideInterval();
+          });
+        });
+      }
+
+      // --- SISTEMA DE CUPONS ---
+      function applyCoupon() {
+        const couponInput = document.getElementById("coupon-input");
+        const couponMessage = document.getElementById("coupon-message");
+        const couponDiscount = document.getElementById("coupon-discount");
+        const couponDetails = document.getElementById("coupon-details");
+
+        const couponCode = couponInput.value.trim().toUpperCase();
+
+        if (!couponCode) {
+          couponMessage.innerHTML =
+            '<span class="text-red-600">Digite um código de cupom</span>';
+          couponMessage.classList.remove("hidden");
+          return;
+        }
+
+        if (validCoupons[couponCode]) {
+          activeCoupon = {
+            code: couponCode,
+            discount: validCoupons[couponCode],
+          };
+
+          couponMessage.innerHTML = "";
+          couponMessage.classList.add("hidden");
+          couponDiscount.classList.remove("hidden");
+          couponDetails.innerHTML = `Cupom <strong>${couponCode}</strong> aplicado: ${validCoupons[couponCode]}% de desconto`;
+
+          // Atualiza os totais
+          updateCartUI();
+
+          // Mostra toast de sucesso
+          showToast(`Cupom ${couponCode} aplicado!`);
+        } else {
+          couponMessage.innerHTML =
+            '<span class="text-red-600">Cupom inválido ou expirado</span>';
+          couponMessage.classList.remove("hidden");
+          activeCoupon = null;
+          updateCartUI();
+        }
+      }
+
+      function removeCoupon() {
+        activeCoupon = null;
+        document.getElementById("coupon-input").value = "";
+        document.getElementById("coupon-message").innerHTML = "";
+        document.getElementById("coupon-message").classList.add("hidden");
+        document.getElementById("coupon-discount").classList.add("hidden");
+        updateCartUI();
+        showToast("Cupom removido");
+      }
+
+      function calculateCartTotals() {
+        let subtotal = 0;
+        cart.forEach((item) => {
+          const price = item.isSale ? item.salePrice : item.price;
+          subtotal += price * item.qty;
+        });
+
+        let discount = 0;
+        let total = subtotal;
+
+        if (activeCoupon) {
+          discount = (subtotal * activeCoupon.discount) / 100;
+          total = subtotal - discount;
+        }
+
+        return { subtotal, discount, total };
+      }
+
+      // --- RENDER SALE ITEMS ---
+      function renderSaleItems() {
+        const container = document.getElementById("sale-items-container");
+        container.innerHTML = "";
+        const saleItems = comics.filter((c) => c.isSale);
+        saleItems.forEach((item) => {
+          const el = document.createElement("div");
+          el.className =
+            "bg-white p-3 rounded-xl border-4 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-4 cursor-pointer hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] transition-all";
+          el.onclick = () => openQuickView(item.id);
+          el.innerHTML = `
+                    <img src="${
+                      item.image
+                    }" class="w-16 h-20 object-cover rounded border-2 border-black">
+                    <div>
+                        <h4 class="font-bold text-sm text-black leading-tight mb-1">${
+                          item.title
+                        }</h4>
+                        <div class="flex flex-col">
+                            <span class="text-[10px] text-gray-500 line-through font-bold">R$ ${item.price
+                              .toFixed(2)
+                              .replace(".", ",")}</span>
+                            <span class="text-red-600 font-black text-lg leading-none">R$ ${item.salePrice
+                              .toFixed(2)
+                              .replace(".", ",")}</span>
+                        </div>
+                    </div>
+                    <div class="ml-auto bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded rotate-3">-50%</div>
+                `;
+          container.appendChild(el);
+        });
+      }
+
+      // --- COUNTDOWN ---
+      function updateCountdown() {
+        const now = new Date();
+        const target = new Date(now);
+        target.setHours(target.getHours() + 4 - (target.getHours() % 4));
+        target.setMinutes(0);
+        target.setSeconds(0);
+        const diff = target - now;
+        const hours = Math.floor(
+          (diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)
+        );
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        document.getElementById("cd-hours").innerText = String(hours).padStart(
+          2,
+          "0"
+        );
+        document.getElementById("cd-minutes").innerText = String(
+          minutes
+        ).padStart(2, "0");
+        document.getElementById("cd-seconds").innerText = String(
+          seconds
+        ).padStart(2, "0");
+      }
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
+
+      // --- REVIEWS & RATING ---
+      function setRating(n) {
+        currentRating = n;
+        document.querySelectorAll(".star-rating").forEach((star, i) => {
+          if (i < n) star.classList.add("text-yellow-400");
+          else star.classList.remove("text-yellow-400");
+        });
+      }
+      function submitReview() {
+        const text = document.getElementById("review-text").value;
+        if (currentRating === 0 || !text)
+          return alert("Por favor, dê uma nota e escreva um comentário.");
+        if (!reviews[currentViewId]) reviews[currentViewId] = [];
+        reviews[currentViewId].unshift({
+          rating: currentRating,
+          text,
+          date: new Date().toLocaleDateString(),
+        });
+        localStorage.setItem("marvelReviews", JSON.stringify(reviews));
+        document.getElementById("review-text").value = "";
+        setRating(0);
+        renderReviews(currentViewId);
+        showToast("Avaliação enviada!");
+      }
+      function renderReviews(id) {
+        const list = document.getElementById("reviews-list");
+        const countEl = document.getElementById("review-count");
+        const comicReviews = reviews[id] || [];
+        countEl.innerText = `(${comicReviews.length})`;
+        list.innerHTML = "";
+        if (comicReviews.length === 0) {
+          list.innerHTML =
+            '<p class="text-sm text-gray-400 italic">Seja o primeiro a avaliar!</p>';
+          return;
+        }
+        comicReviews.forEach((r) => {
+          const stars = "★".repeat(r.rating) + "☆".repeat(5 - r.rating);
+          const el = document.createElement("div");
+          el.className = "bg-gray-50 p-3 rounded-lg border border-gray-100";
+          el.innerHTML = `<div class="flex justify-between items-center mb-1"><span class="text-yellow-400 text-sm tracking-widest">${stars}</span><span class="text-xs text-gray-400">${r.date}</span></div><p class="text-sm text-gray-600 font-sans">${r.text}</p>`;
+          list.appendChild(el);
+        });
+      }
+
+      // --- MOBILE MENU ---
+      function toggleMobileMenu() {
+        document.getElementById("mobile-menu").classList.toggle("open");
+      }
+
+      // --- CART VIEWS ---
+      function goToCheckout() {
+        if (cart.length === 0) return alert("Adicione itens antes!");
+        document.getElementById("cart-view-list").classList.add("hidden");
+        document
+          .getElementById("cart-view-checkout")
+          .classList.remove("hidden");
+        document.getElementById("cart-view-checkout").classList.add("flex");
+
+        // Atualiza os valores no checkout
+        const totals = calculateCartTotals();
+        document.getElementById(
+          "checkout-subtotal"
+        ).innerText = `R$ ${totals.subtotal.toFixed(2).replace(".", ",")}`;
+        document.getElementById("checkout-total").innerText = `R$ ${totals.total
+          .toFixed(2)
+          .replace(".", ",")}`;
+
+        if (totals.discount > 0) {
+          document
+            .getElementById("checkout-discount-row")
+            .classList.remove("hidden");
+          document.getElementById(
+            "checkout-discount"
+          ).innerText = `-R$ ${totals.discount.toFixed(2).replace(".", ",")}`;
+        } else {
+          document
+            .getElementById("checkout-discount-row")
+            .classList.add("hidden");
+        }
+      }
+      function backToCart() {
+        document.getElementById("cart-view-checkout").classList.add("hidden");
+        document.getElementById("cart-view-checkout").classList.remove("flex");
+        document.getElementById("cart-view-list").classList.remove("hidden");
+      }
+
+      // --- VALIDAÇÃO DE FORMULÁRIO ---
+      function validateForm() {
+        const inputs = [
+          document.getElementById("checkout-name"),
+          document.getElementById("checkout-email"),
+          document.getElementById("checkout-address"),
+          document.getElementById("checkout-card"),
+          document.getElementById("checkout-expiry"),
+          document.getElementById("checkout-cvv"),
+        ];
+
+        let isValid = true;
+
+        // Remove erros anteriores
+        inputs.forEach((input) => {
+          input.classList.remove("error-shake");
+        });
+
+        // Valida cada campo
+        inputs.forEach((input) => {
+          if (!input.value.trim()) {
+            input.classList.add("error-shake");
+            isValid = false;
+          }
+        });
+
+        // Validação específica para e-mail
+        const emailInput = document.getElementById("checkout-email");
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailInput.value && !emailRegex.test(emailInput.value)) {
+          emailInput.classList.add("error-shake");
+          isValid = false;
+        }
+
+        // Validação para cartão de crédito (número)
+        const cardInput = document.getElementById("checkout-card");
+        const cardRegex = /^\d{16}$/;
+        const cardValue = cardInput.value.replace(/\s/g, "");
+        if (cardValue && !cardRegex.test(cardValue)) {
+          cardInput.classList.add("error-shake");
+          isValid = false;
+        }
+
+        // Validação para data de expiração
+        const expiryInput = document.getElementById("checkout-expiry");
+        const expiryRegex = /^(0[1-9]|1[0-2])\/?([0-9]{2})$/;
+        if (expiryInput.value && !expiryRegex.test(expiryInput.value)) {
+          expiryInput.classList.add("error-shake");
+          isValid = false;
+        }
+
+        // Validação para CVV
+        const cvvInput = document.getElementById("checkout-cvv");
+        const cvvRegex = /^\d{3}$/;
+        if (cvvInput.value && !cvvRegex.test(cvvInput.value)) {
+          cvvInput.classList.add("error-shake");
+          isValid = false;
+        }
+
+        return isValid;
+      }
+
+      function processPayment(e) {
+        e.preventDefault();
+
+        // Valida o formulário
+        if (!validateForm()) {
+          showToast("Preencha todos os campos corretamente!", "error");
+          return;
+        }
+
+        const btn = e.target.querySelector("button");
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Processando...`;
+        btn.disabled = true;
+        setTimeout(() => {
+          document.getElementById("cart-view-checkout").classList.add("hidden");
+          document
+            .getElementById("cart-view-checkout")
+            .classList.remove("flex");
+          document
+            .getElementById("cart-view-success")
+            .classList.remove("hidden");
+          document.getElementById("cart-view-success").classList.add("flex");
+          cart = [];
+          activeCoupon = null;
+          saveCart();
+          updateCartUI();
+          confetti({
+            particleCount: 150,
+            spread: 70,
+            origin: { y: 0.6 },
+            colors: ["#ED1D24", "#000000", "#ffffff"],
+          });
+          btn.innerHTML = originalText;
+          btn.disabled = false;
+        }, 2000);
+      }
+
+      // --- QUICK VIEW ---
+      function openQuickView(id) {
+        currentViewId = id;
+        const comic = comics.find((c) => c.id === id);
+        document.getElementById("qv-image").src = comic.image;
+        document.getElementById("qv-title").innerText = comic.title;
+        document.getElementById("qv-category").innerText = comic.category;
+        const priceEl = document.getElementById("qv-price");
+        if (comic.isSale) {
+          priceEl.innerHTML = `<span class="text-sm line-through text-gray-400 mr-2">R$ ${comic.price
+            .toFixed(2)
+            .replace(".", ",")}</span> R$ ${comic.salePrice
+            .toFixed(2)
+            .replace(".", ",")}`;
+          priceEl.classList.add("text-red-600");
+        } else {
+          priceEl.innerText = `R$ ${comic.price.toFixed(2).replace(".", ",")}`;
+          priceEl.classList.remove("text-red-600");
+        }
+        document.getElementById("qv-desc").innerText = comic.desc;
+        const btn = document.getElementById("qv-add-btn");
+        btn.onclick = () => {
+          addToCart(id);
+          closeQuickView();
+        };
+        renderReviews(id);
+        const relatedContainer = document.getElementById("qv-related");
+        relatedContainer.innerHTML = "";
+        const related = comics
+          .filter((c) => c.category === comic.category && c.id !== id)
+          .sort(() => 0.5 - Math.random())
+          .slice(0, 3);
+        if (related.length === 0) {
+          const randomOthers = comics.filter((c) => c.id !== id).slice(0, 3);
+          randomOthers.forEach((r) => appendRelatedItem(r, relatedContainer));
+        } else {
+          related.forEach((r) => appendRelatedItem(r, relatedContainer));
+        }
+        document.getElementById("quick-view-modal").classList.remove("hidden");
+      }
+      function appendRelatedItem(comic, container) {
+        const div = document.createElement("div");
+        div.className =
+          "bg-white p-3 rounded-lg shadow-sm border border-gray-200 cursor-pointer hover:shadow-md transition";
+        div.onclick = () => openQuickView(comic.id);
+        const priceDisplay = comic.isSale
+          ? `<span class="text-red-600 font-bold">R$ ${comic.salePrice.toFixed(
+              2
+            )}</span>`
+          : `R$ ${comic.price.toFixed(2)}`;
+        div.innerHTML = `<img src="${comic.image}" class="w-full h-32 object-cover rounded mb-2"><h4 class="text-xs font-bold text-gray-800 line-clamp-1 font-sans">${comic.title}</h4><span class="text-xs font-bold text-gray-600">${priceDisplay}</span>`;
+        container.appendChild(div);
+      }
+      function closeQuickView() {
+        document.getElementById("quick-view-modal").classList.add("hidden");
+      }
+      document
+        .getElementById("quick-view-modal")
+        .addEventListener("click", (e) => {
+          if (e.target === document.getElementById("quick-view-modal"))
+            closeQuickView();
+        });
+
+      // --- RENDER PRODUCTS (UPDATED WITH LOAD MORE) ---
+      function renderProducts(filter = "all", searchTerm = "") {
+        const grid = document.getElementById("products-grid");
+        const noResults = document.getElementById("no-results");
+        const loadMoreContainer = document.getElementById(
+          "load-more-container"
+        );
+
+        grid.innerHTML = "";
+
+        const filteredComics = comics.filter((c) => {
+          const matchCat = filter === "all" || c.category === filter;
+          const matchSearch = c.title
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+          const matchWish = showWishlistOnly ? wishlist.includes(c.id) : true;
+          return matchCat && matchSearch && matchWish;
+        });
+
+        if (filteredComics.length === 0) {
+          noResults.classList.remove("hidden");
+          loadMoreContainer.style.display = "none";
+        } else {
+          noResults.classList.add("hidden");
+
+          // SLICE ARRAY FOR PAGINATION
+          const comicsToShow = filteredComics.slice(0, visibleLimit);
+
+          // Show/Hide Load More Button
+          if (visibleLimit >= filteredComics.length) {
+            loadMoreContainer.style.display = "none";
+          } else {
+            loadMoreContainer.style.display = "block";
+          }
+
+          comicsToShow.forEach((c, i) => {
+            const isWish = wishlist.includes(c.id);
+            let badgeHtml = "";
+            if (c.isSale)
+              badgeHtml = `<div class="absolute top-0 left-0 bg-red-600 text-white text-[10px] font-black px-3 py-1 rounded-br-lg shadow-md z-10 animate-pulse">50% OFF</div>`;
+            else if (c.badge)
+              badgeHtml = `<div class="absolute top-0 left-0 bg-yellow-400 text-black text-[10px] font-black px-3 py-1 rounded-br-lg shadow-md z-10">${c.badge}</div>`;
+
+            let priceHtml = "";
+            if (c.isSale) {
+              priceHtml = `<div class="flex flex-col"><span class="price-strike text-xs">R$ ${c.price
+                .toFixed(2)
+                .replace(
+                  ".",
+                  ","
+                )}</span><div class="text-2xl font-black text-red-600">R$ ${c.salePrice
+                .toFixed(2)
+                .replace(".", ",")}</div></div>`;
+            } else {
+              priceHtml = `<div class="text-2xl font-black text-red-600">R$ ${c.price
+                .toFixed(2)
+                .replace(".", ",")}</div>`;
+            }
+
+            const el = document.createElement("div");
+            el.className =
+              "bg-white rounded-xl overflow-hidden shadow-lg comic-card flex flex-col h-full border border-gray-200 animate-[fadeIn_0.5s_ease-out] group relative reveal";
+            el.style.animationDelay = `${i * 50}ms`;
+            el.innerHTML = `
+                        ${badgeHtml}
+                        <button onclick="toggleWishlist(${
+                          c.id
+                        }, this)" class="absolute top-2 right-2 z-20 p-2 rounded-full bg-white/80 hover:bg-white transition shadow-sm ${
+              isWish ? "text-red-600" : "text-gray-400"
+            }"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ${
+              isWish ? "fill-current" : ""
+            }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg></button>
+                        <div class="h-80 overflow-hidden relative cursor-pointer bg-gray-100" onclick="openQuickView(${
+                          c.id
+                        })">
+                             <img src="${
+                               c.image
+                             }" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" onerror="this.src='https://placehold.co/400x600/1f2937/ffffff?text=Cover'">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4"><span class="text-white text-xs font-bold uppercase tracking-wider mb-1">Ver Detalhes</span></div>
+                        </div>
+                        <div class="p-5 flex flex-col flex-1">
+                            <div class="text-xs text-gray-400 font-bold uppercase mb-1 tracking-wide font-sans flex justify-between"><span>${
+                              c.category
+                            }</span></div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-1 leading-tight flex-1 cursor-pointer hover:text-red-600 transition-colors" onclick="openQuickView(${
+                              c.id
+                            })">${c.title}</h3>
+                            <div class="flex justify-between items-end mt-4">
+                                <div>${priceHtml}</div>
+                                <button onclick="addToCart(${
+                                  c.id
+                                })" class="bg-gray-900 text-white p-3 rounded-full hover:bg-red-600 transition-colors shadow-lg transform active:scale-95 group-hover:bg-red-600"><svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg></button>
+                            </div>
+                        </div>
+                    `;
+            grid.appendChild(el);
+          });
+        }
+        observeScroll();
+      }
+
+      // LOAD MORE FUNCTION
+      function loadMore() {
+        visibleLimit += 4; // Load 4 more (1 row)
+        const activeBtn = document.querySelector(".filter-btn.bg-red-600");
+        const activeFilter = activeBtn ? activeBtn.dataset.filter : "all";
+        const searchTerm = document.getElementById("search-input").value;
+        renderProducts(activeFilter, searchTerm);
+      }
+
+      // --- CORE FUNCTIONS (Cart, Wishlist) ---
+      function toggleCart() {
+        const modal = document.getElementById("cart-modal");
+        const panel = document.getElementById("cart-panel");
+        if (modal.classList.contains("hidden")) {
+          document.getElementById("cart-view-list").classList.remove("hidden");
+          document.getElementById("cart-view-checkout").classList.add("hidden");
+          document
+            .getElementById("cart-view-checkout")
+            .classList.remove("flex");
+          document.getElementById("cart-view-success").classList.add("hidden");
+          modal.classList.remove("hidden");
+          setTimeout(() => panel.classList.remove("translate-x-full"), 10);
+        } else {
+          panel.classList.add("translate-x-full");
+          setTimeout(() => modal.classList.add("hidden"), 300);
+        }
+      }
+
+      // --- INICIALIZAÇÃO ---
+      // Setup inicial - CHAMADA DO CARROSSEL CORRIGIDA
+      initCarousel(); // Inicializa o carrossel corretamente
+      initBackToTop(); // Inicializa o botão voltar ao topo
+      renderProducts();
+      renderSaleItems();
+      updateCartUI();
+
+      function saveCart() {
+        localStorage.setItem("marvelCart", JSON.stringify(cart));
+      }
+      function showToast(msg, type = "success") {
+        const t = document.getElementById("toast");
+        const messageEl = document.getElementById("toast-message");
+        const iconContainer = t.querySelector(".bg-green-500/20");
+
+        messageEl.innerText = msg;
+
+        if (type === "error") {
+          t.classList.remove("border-green-500");
+          t.classList.add("border-red-500");
+          iconContainer.classList.remove("bg-green-500/20");
+          iconContainer.classList.add("bg-red-500/20");
+          const icon = iconContainer.querySelector("svg");
+          icon.classList.remove("text-green-500");
+          icon.classList.add("text-red-500");
+          icon.innerHTML =
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />';
+        } else {
+          t.classList.remove("border-red-500");
+          t.classList.add("border-green-500");
+          iconContainer.classList.remove("bg-red-500/20");
+          iconContainer.classList.add("bg-green-500/20");
+          const icon = iconContainer.querySelector("svg");
+          icon.classList.remove("text-red-500");
+          icon.classList.add("text-green-500");
+          icon.innerHTML =
+            '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />';
+        }
+
+        t.classList.remove("translate-y-40");
+        setTimeout(() => t.classList.add("translate-y-40"), 3000);
+      }
+      function observeScroll() {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach(
+              (entry) =>
+                entry.isIntersecting && entry.target.classList.add("active")
+            );
+          },
+          { threshold: 0.1 }
+        );
+        document
+          .querySelectorAll(".reveal")
+          .forEach((el) => observer.observe(el));
+      }
+
+      function addToCart(id) {
+        const comic = comics.find((c) => c.id === id);
+        const existing = cart.find((i) => i.id === id);
+        if (existing) existing.qty++;
+        else cart.push({ ...comic, qty: 1 });
+        saveCart();
+        updateCartUI();
+        showToast(`${comic.title} adicionado ao carrinho!`);
+      }
+      function updateCartQty(i, change) {
+        if (cart[i].qty + change <= 0) cart.splice(i, 1);
+        else cart[i].qty += change;
+        saveCart();
+        updateCartUI();
+      }
+      function removeFromCart(i) {
+        cart.splice(i, 1);
+        saveCart();
+        updateCartUI();
+      }
+      function updateCartUI() {
+        const count = document.getElementById("cart-count");
+        const totalQty = cart.reduce((acc, i) => acc + i.qty, 0);
+        count.innerText = totalQty;
+        if (totalQty > 0) {
+          count.classList.remove("scale-0");
+          setTimeout(() => count.classList.remove("scale-125"), 150);
+        } else count.classList.add("scale-0");
+        const container = document.getElementById("cart-items");
+        const totalEl = document.getElementById("cart-total");
+        const subtotalEl = document.getElementById("cart-subtotal");
+        const discountEl = document.getElementById("cart-discount");
+        const discountRow = document.getElementById("discount-row");
+
+        container.innerHTML = "";
+        if (cart.length === 0) {
+          container.innerHTML = `<div class="text-center text-gray-500 mt-20" id="empty-cart-msg"><div class="bg-gray-200 rounded-full p-6 w-24 h-24 mx-auto mb-4 flex items-center justify-center animate-pulse"><svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg></div><p class="font-bold text-lg text-gray-700">Carrinho Vazio!</p><p class="text-sm">Que tal adicionar alguns clássicos?</p></div>`;
+          totalEl.innerText = "R$ 0,00";
+          subtotalEl.innerText = "R$ 0,00";
+          discountRow.classList.add("hidden");
+          return;
+        }
+
+        const totals = calculateCartTotals();
+
+        subtotalEl.innerText = `R$ ${totals.subtotal
+          .toFixed(2)
+          .replace(".", ",")}`;
+        totalEl.innerText = `R$ ${totals.total.toFixed(2).replace(".", ",")}`;
+
+        if (totals.discount > 0) {
+          discountRow.classList.remove("hidden");
+          discountEl.innerText = `-R$ ${totals.discount
+            .toFixed(2)
+            .replace(".", ",")}`;
+        } else {
+          discountRow.classList.add("hidden");
+        }
+
+        cart.forEach((item, i) => {
+          const price = item.isSale ? item.salePrice : item.price;
+          const div = document.createElement("div");
+          div.className =
+            "flex items-center gap-4 bg-white p-3 rounded-lg border border-gray-200 shadow-sm";
+          div.innerHTML = `<img src="${
+            item.image
+          }" class="w-14 h-18 object-cover rounded-md"><div class="flex-1 font-sans"><h4 class="font-bold text-gray-900 text-sm line-clamp-1">${
+            item.title
+          }</h4><div class="text-red-600 font-bold text-sm">R$ ${(
+            price * item.qty
+          )
+            .toFixed(2)
+            .replace(
+              ".",
+              ","
+            )}</div></div><div class="flex items-center bg-gray-100 rounded-lg"><button onclick="updateCartQty(${i}, -1)" class="px-2 py-1 hover:text-red-600">-</button><span class="text-xs font-bold w-4 text-center font-sans">${
+            item.qty
+          }</span><button onclick="updateCartQty(${i}, 1)" class="px-2 py-1 hover:text-green-600">+</button></div>`;
+          container.appendChild(div);
+        });
+      }
+
+      function searchComics(val) {
+        visibleLimit = 8; // Reset limit on search
+        const active = document.querySelector(".filter-btn.bg-red-600").dataset
+          .filter;
+        renderProducts(active, val);
+      }
+      function filterComics(cat) {
+        visibleLimit = 8; // Reset limit on filter
+        document
+          .getElementById("wishlist-filter-btn")
+          .classList.remove("bg-red-100", "text-red-800", "border-red-300");
+        showWishlistOnly = false;
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          const isActive = btn.dataset.filter === cat;
+          btn.classList.toggle("bg-red-600", isActive);
+          btn.classList.toggle("text-white", isActive);
+          btn.classList.toggle("bg-white", !isActive);
+          btn.classList.toggle("text-gray-700", !isActive);
+        });
+        renderProducts(cat, document.getElementById("search-input").value);
+        // Scroll to grid to show changes
+        document
+          .getElementById("products-grid")
+          .scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      function toggleWishlistOnly() {
+        visibleLimit = 8;
+        showWishlistOnly = !showWishlistOnly;
+        const btn = document.getElementById("wishlist-filter-btn");
+        if (showWishlistOnly) {
+          btn.classList.add("bg-red-100", "text-red-800", "border-red-300");
+          renderProducts();
+        } else {
+          btn.classList.remove("bg-red-100", "text-red-800", "border-red-300");
+          renderProducts(
+            document.querySelector(".filter-btn.bg-red-600").dataset.filter
+          );
+        }
+      }
+      function resetFilters() {
+        filterComics("all");
+        document.getElementById("search-input").value = "";
+      }
+    </script>
+  </body>
+</html>
