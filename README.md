@@ -51,23 +51,6 @@ O objetivo foi criar uma interface **Premium**, com animações fluidas, design 
 *   **Gerenciamento de Estado**: React Context API (ShopContext, ThemeContext)
 *   **Feedback Visual**: React Hot Toast
 *   **Ícones**: Lucide React
-
-## 📦 Como Rodar Localmente
-
-```bash
-# Clone este repositório
-git clone https://github.com/RobsonMarcolino/marvel-store.git
-
-# Entre na pasta
-cd marvel-store
-
-# Instale as dependências
-npm install
-
-# Rode o servidor de desenvolvimento
-npm run dev
-```
-
 ---
 
 <p align="center">
