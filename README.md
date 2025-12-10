@@ -54,5 +54,5 @@ O objetivo foi criar uma interface **Premium**, com animações fluidas, design 
 ---
 
 <p align="center">
-  Desenvolvido com 💙 e ☕ por <strong>Robson Marcolino</strong>
+  Desenvolvido por <strong>Robson Marcolino</strong>
 </p>
