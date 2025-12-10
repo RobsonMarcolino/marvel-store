@@ -4,7 +4,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useSound, SOUNDS } from '../hooks/useSound';
 
 export const Navbar = () => {
-    const { cart, toggleCart, searchQuery, setSearchQuery, user, logout, setIsLoginOpen, toggleWishlistModal, wishlist } = useShop();
+    const { cart, toggleCart, searchQuery, setSearchQuery, user, logout, setIsLoginOpen, toggleWishlistModal, wishlist, toggleOrdersModal, orders } = useShop();
     const { theme, toggleTheme } = useTheme();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [playClick] = useSound(SOUNDS.CLICK);
@@ -97,6 +97,21 @@ export const Navbar = () => {
                             </svg>
                         </div>
 
+                        {user && (
+                            <div className="relative cursor-pointer group" onClick={toggleOrdersModal}>
+                                <div className="p-2 rounded-full hover:bg-white/10 transition relative backdrop-blur-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 group-hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                                    </svg>
+                                    {orders.length > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center transform transition-transform duration-200 border-2 border-gray-900 shadow-sm">
+                                            {orders.filter(o => o.status !== 'delivered').length}
+                                        </span>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+
                         <div className="relative cursor-pointer group" onClick={toggleWishlistModal}>
                             <div className="p-2 rounded-full hover:bg-white/10 transition relative backdrop-blur-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-300 group-hover:text-red-500 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -153,6 +168,9 @@ export const Navbar = () => {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                         <a href="#" className="block text-gray-300 hover:text-red-500 py-2 font-bold">Meus Favoritos</a>
+                        {user && (
+                            <a href="#" onClick={(e) => { e.preventDefault(); toggleOrdersModal(); setIsMobileMenuOpen(false); }} className="block text-gray-300 hover:text-red-500 py-2 font-bold">Meus Pedidos</a>
+                        )}
                         <a href="#products-grid" onClick={() => setIsMobileMenuOpen(false)} className="block text-gray-300 hover:text-red-500 py-2 font-bold">Lançamentos</a>
                         <a href="#about-section" onClick={() => setIsMobileMenuOpen(false)} className="block text-gray-300 hover:text-red-500 py-2 font-bold">Sobre Nós</a>
                         {user ? (

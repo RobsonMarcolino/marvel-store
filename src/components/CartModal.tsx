@@ -10,7 +10,7 @@ const VALID_COUPONS: Record<string, number> = {
 };
 
 export const CartModal = () => {
-    const { cart, isCartOpen, toggleCart, updateCartQty, removeFromCart, clearCart, user, addXp, setIsSuccessOpen, setIsLoginOpen } = useShop();
+    const { cart, isCartOpen, toggleCart, updateCartQty, removeFromCart, clearCart, user, addXp, setIsSuccessOpen, setIsLoginOpen, addOrder } = useShop();
     const [view, setView] = useState<'list' | 'checkout' | 'success'>('list');
     const [couponCode, setCouponCode] = useState('');
     const [activeCoupon, setActiveCoupon] = useState<{ code: string; discount: number } | null>(null);
@@ -79,7 +79,6 @@ export const CartModal = () => {
         setIsProcessing(true);
         setTimeout(() => {
             setIsProcessing(false);
-            // setView('success'); // Removed in favor of modal
             playSuccess();
             confetti({
                 particleCount: 150,
@@ -87,6 +86,17 @@ export const CartModal = () => {
                 origin: { y: 0.6 },
                 colors: ['#ED1D24', '#000000', '#ffffff'],
             });
+
+            // Create Order
+            const newOrder: any = {
+                id: Math.random().toString(36).substr(2, 9).toUpperCase(),
+                date: new Date().toISOString(),
+                items: [...cart],
+                total: total,
+                status: 'processing',
+                estimatedDelivery: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() // +5 days
+            };
+            addOrder(newOrder);
 
             // Gamification Logic
             if (user) {

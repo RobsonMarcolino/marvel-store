@@ -14,6 +14,7 @@ import { LoginModal } from './components/LoginModal';
 import { QuickViewModal } from './components/QuickViewModal';
 import { CheckoutSuccessModal } from './components/CheckoutSuccessModal';
 import { WishlistModal } from './components/WishlistModal';
+import { OrdersModal } from './components/OrdersModal';
 import { Reveal } from './components/Reveal';
 
 function AppContent() {
@@ -56,6 +57,7 @@ function AppContent() {
                 {isCartOpen && <CartModal />}
                 {quickViewId && <QuickViewModal />}
                 <WishlistModal />
+                <OrdersModal />
                 <LoginModal isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
                 <CheckoutSuccessModal isOpen={isSuccessOpen} onClose={() => setIsSuccessOpen(false)} />
 

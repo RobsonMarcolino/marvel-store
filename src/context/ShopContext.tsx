@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import toast from 'react-hot-toast';
-import type { CartItem, Review } from '../types';
+import type { CartItem, Review, Order } from '../types';
 import { comics } from '../data/comics';
 
 interface User {
@@ -46,6 +46,11 @@ interface ShopContextType {
     addXp: (amount: number) => void;
     selectedCharacter: string | null;
     setSelectedCharacter: (char: string | null) => void;
+    orders: Order[];
+    addOrder: (order: Order) => void;
+    isOrdersOpen: boolean;
+    setIsOrdersOpen: (isOpen: boolean) => void;
+    toggleOrdersModal: () => void;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -228,6 +233,22 @@ export const ShopProvider = ({ children }: { children: ReactNode }) => {
     const closeQuickView = () => setQuickViewId(null);
     const clearCart = () => setCart([]);
 
+    const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+    const [orders, setOrders] = useState<Order[]>(() => {
+        const saved = localStorage.getItem('marvelOrders');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('marvelOrders', JSON.stringify(orders));
+    }, [orders]);
+
+    const addOrder = (order: Order) => {
+        setOrders(prev => [order, ...prev]);
+    };
+
+    const toggleOrdersModal = () => setIsOrdersOpen(prev => !prev);
+
     return (
         <ShopContext.Provider value={{
             cart, wishlist, reviews, isCartOpen, quickViewId,
@@ -250,7 +271,12 @@ export const ShopProvider = ({ children }: { children: ReactNode }) => {
             setIsWishlistOpen,
             toggleWishlistModal,
             isSuccessOpen,
-            setIsSuccessOpen
+            setIsSuccessOpen,
+            orders,
+            addOrder,
+            isOrdersOpen,
+            setIsOrdersOpen,
+            toggleOrdersModal
         }}>
             {children}
         </ShopContext.Provider>

@@ -27,3 +27,12 @@ export interface Review {
     text: string;
     date: string;
 }
+
+export interface Order {
+    id: string;
+    date: string;
+    items: CartItem[];
+    total: number;
+    status: 'processing' | 'shipped' | 'delivered';
+    estimatedDelivery: string;
+}
